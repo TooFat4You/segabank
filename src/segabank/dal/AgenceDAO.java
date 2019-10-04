@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AgenceDAO implements IDAO<Integer, Agence> {
-    private static final String INSERT_QUERY = "INSERT INTO";
-    private static final String UPDATE_QUERY = "UPDATE";
-    private static final String DELETE_QUERY = "DELETE";
-    private static final String QUERY_ALL = "SELECT";
-    private static final String QUERY_ID = "SELECT";
+    private static final String INSERT_QUERY = "INSERT INTO agence (Code, Adresse) VALUES (?, ?)";
+    private static final String UPDATE_QUERY = "UPDATE agence SET Code = ?, Adresse = ? WHERE agence.Id = ?";
+    private static final String DELETE_QUERY = "DELETE FROM agence WHERE agence.Id = ?";
+    private static final String QUERY_ALL = "SELECT Id, Code, Adresse FROM agence;";
+    private static final String QUERY_ID = "SELECT Id, Code, Adresse FROM agence WHERE Id = ?";
 
     @Override
     public void create(Agence agence) throws SQLException, IOException, ClassNotFoundException {
@@ -66,11 +66,11 @@ public class AgenceDAO implements IDAO<Integer, Agence> {
                 ps.setInt(1, id);
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    
+                    agence = new Agence(rs.getInt("Id"), rs.getString("Code"), rs.getString("Adresse"));
                 }
             }
         }
-
+        return agence;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class AgenceDAO implements IDAO<Integer, Agence> {
             try (PreparedStatement ps = connection.prepareStatement(QUERY_ALL)) {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    agences.add(new Agence(rs.getInt("id"), rs.getString("code"), rs.getString("adresse")));
+                    agences.add(new Agence(rs.getInt("Id"), rs.getString("Code"), rs.getString("Adresse")));
                 }
             }
         }

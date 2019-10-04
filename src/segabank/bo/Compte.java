@@ -1,20 +1,42 @@
 package segabank.bo;
 
+import java.util.Date;
+
 public abstract class Compte {
 
-    public Double id;
-    public Double solde;
+    public enum Etat {
+        epargne,
+        payant,
+        simple;
 
-    public Compte(Double id, Double solde) {
-        this.id = id;
-        this.solde = solde;
+        public String getLabel() {
+            switch (this) {
+                case epargne:
+                    return "epargne";
+                case payant:
+                    return "payant";
+                default:
+                    return "simple";
+            }
+        }
     }
 
-    public Double getId() {
+    protected Integer id;
+    protected Double solde;
+    protected Date date;
+    protected Agence agence;
+
+    public Compte(Integer id, Double solde, Agence agence) {
+        this.id = id;
+        this.solde = solde;
+        this.agence = agence;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Double id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -25,6 +47,16 @@ public abstract class Compte {
     public void setSolde(Double solde) {
         this.solde = solde;
     }
+
+    public Agence getAgence() {
+        return agence;
+    }
+
+    public void setAgence(Agence agence) {
+        this.agence = agence;
+    }
+
+    public abstract Etat getType();
 
     @Override
     public String toString() {
