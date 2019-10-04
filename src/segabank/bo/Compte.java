@@ -2,27 +2,27 @@ package segabank.bo;
 
 public abstract class Compte {
 
-    public double id;
-    public double solde;
+    public Double id;
+    public Double solde;
 
-    public Compte(double id, double solde) {
+    public Compte(Double id, Double solde) {
         this.id = id;
         this.solde = solde;
     }
 
-    public double getId() {
+    public Double getId() {
         return id;
     }
 
-    public void setId(double id) {
+    public void setId(Double id) {
         this.id = id;
     }
 
-    public double getSolde() {
+    public Double getSolde() {
         return solde;
     }
 
-    public void setSolde(double solde) {
+    public void setSolde(Double solde) {
         this.solde = solde;
     }
 

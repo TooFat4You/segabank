@@ -2,21 +2,21 @@ package segabank.bo;
 
 public class Agence {
 
-    private int id;
+    private Integer id;
     private String code;
     private String adresse;
 
-    public Agence(int id, String code, String adresse) {
+    public Agence(Integer id, String code, String adresse) {
         this.id = id;
         this.code = code;
         this.adresse = adresse;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

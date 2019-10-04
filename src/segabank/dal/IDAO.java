@@ -10,7 +10,7 @@ public interface IDAO<ID, E> {
 
     void update(E object) throws SQLException, IOException, ClassNotFoundException;
 
-    void remove(E object) throws SQLException, IOException, ClassNotFoundException;
+    void delete(E object) throws SQLException, IOException, ClassNotFoundException;
 
     E findById(ID id) throws SQLException, IOException, ClassNotFoundException;
 

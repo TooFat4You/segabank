@@ -1,21 +1,19 @@
 package segabank.bo;
 
 public class CompteEpargne extends Compte {
-
-
-
+    
     private double tauxInteret;
 
-    public CompteEpargne(double id, double solde, double tauxInteret) {
+    public CompteEpargne(Double id, Double solde, Double tauxInteret) {
         super(id, solde);
         this.tauxInteret = tauxInteret;
     }
 
-    public double getTauxInteret() {
+    public Double getTauxInteret() {
         return tauxInteret;
     }
 
-    public void setTauxInteret(double tauxInteret) {
+    public void setTauxInteret(Double tauxInteret) {
         this.tauxInteret = tauxInteret;
     }
 
