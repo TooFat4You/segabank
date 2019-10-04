@@ -1,10 +1,12 @@
 package segabank.bo;
 
+import java.util.Date;
+
 public class CompteSimple extends Compte {
     private Double decouvert;
 
-    public CompteSimple(Integer id, Double solde, Agence agence, Double decouvert) {
-        super(id, solde, agence);
+    public CompteSimple(Integer id, Double solde, Date date, Agence agence, Double decouvert) {
+        super(id, solde, date, agence);
         this.decouvert = decouvert;
     }
 

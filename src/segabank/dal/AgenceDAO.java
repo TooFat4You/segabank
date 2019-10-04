@@ -77,12 +77,14 @@ public class AgenceDAO implements IDAO<Integer, Agence> {
     public List<Agence> findAll() throws SQLException, IOException, ClassNotFoundException {
         Connection connection = PersistenceManager.getConnection();
         List<Agence> agences = new ArrayList<>();
-
+        CompteDAO compteDAO = new CompteDAO();
         if (connection != null) {
             try (PreparedStatement ps = connection.prepareStatement(QUERY_ALL)) {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    agences.add(new Agence(rs.getInt("Id"), rs.getString("Code"), rs.getString("Adresse")));
+                    Agence agence = new Agence(rs.getInt("Id"), rs.getString("Code"), rs.getString("Adresse"));
+                    compteDAO.getForAgence(agence);
+                    agences.add(agence);
                 }
             }
         }

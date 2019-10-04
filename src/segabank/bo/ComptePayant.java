@@ -1,5 +1,7 @@
 package segabank.bo;
 
+import java.util.Date;
+
 public class ComptePayant extends Compte {
 
     // Chaque opération de retrait et de versement est payante et vaut 5 % du montant de l'opération.
@@ -8,8 +10,8 @@ public class ComptePayant extends Compte {
 
     private static final Integer TAUX_COMMISSION = 5;
 
-    public ComptePayant(Integer id, Double solde, Agence agence) {
-        super(id, solde, agence);
+    public ComptePayant(Integer id, Double solde, Date date, Agence agence) {
+        super(id, solde, date, agence);
     }
 
     @Override

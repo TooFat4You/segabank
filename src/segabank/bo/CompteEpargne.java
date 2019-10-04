@@ -1,11 +1,13 @@
 package segabank.bo;
 
+import java.util.Date;
+
 public class CompteEpargne extends Compte {
     
     private double tauxInteret;
 
-    public CompteEpargne(Integer id, Double solde, Agence agence, Double tauxInteret) {
-        super(id, solde, agence);
+    public CompteEpargne(Integer id, Double solde, Date date, Agence agence, Double tauxInteret) {
+        super(id, solde, date, agence);
         this.tauxInteret = tauxInteret;
     }
 

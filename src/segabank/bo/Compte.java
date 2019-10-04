@@ -26,9 +26,10 @@ public abstract class Compte {
     protected Date date;
     protected Agence agence;
 
-    public Compte(Integer id, Double solde, Agence agence) {
+    public Compte(Integer id, Double solde, Date date, Agence agence) {
         this.id = id;
         this.solde = solde;
+        this.date = date;
         this.agence = agence;
     }
 
