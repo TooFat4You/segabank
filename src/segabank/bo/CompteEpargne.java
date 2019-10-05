@@ -6,8 +6,8 @@ public class CompteEpargne extends Compte {
     
     private double tauxInteret;
 
-    public CompteEpargne(Integer id, Double solde, Date date, Agence agence, Double tauxInteret) {
-        super(id, solde, date, agence);
+    public CompteEpargne(Integer id, Double solde, Date date, Integer idAgence, Double tauxInteret) {
+        super(id, solde, date, idAgence);
         this.tauxInteret = tauxInteret;
     }
 
@@ -35,7 +35,7 @@ public class CompteEpargne extends Compte {
         sb.append(", id=").append(id);
         sb.append(", solde=").append(solde);
         sb.append(", date=").append(date);
-        sb.append(", agence=").append(agence);
+        sb.append(", agence=").append(5);
         sb.append('}');
         return sb.toString();
     }

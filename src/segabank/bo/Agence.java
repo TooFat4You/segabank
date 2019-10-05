@@ -1,5 +1,6 @@
 package segabank.bo;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +58,13 @@ public class Agence {
         return compteSimples;
     }
 
+    public List<Compte> getComptes() {
+        List<Compte> comptes = new ArrayList<>();
+        comptes.addAll(compteEpargnes);
+        comptes.addAll(comptePayants);
+        comptes.addAll(compteSimples);
+        return comptes;
+    }
 
     @Override
     public String toString() {
@@ -64,9 +72,9 @@ public class Agence {
         sb.append("id=").append(id);
         sb.append(", code='").append(code).append('\'');
         sb.append(", adresse='").append(adresse).append('\'');
-        sb.append(", compteEpargnes=").append(compteEpargnes.size());
-        sb.append(", comptePayants=").append(comptePayants.size());
-        sb.append(", compteSimples=").append(compteSimples.size());
+        sb.append(", compteEpargnes=").append(compteEpargnes);
+        sb.append(", comptePayants=").append(comptePayants);
+        sb.append(", compteSimples=").append(compteSimples);
         sb.append('}');
         return sb.toString();
     }

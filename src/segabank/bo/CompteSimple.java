@@ -5,8 +5,8 @@ import java.util.Date;
 public class CompteSimple extends Compte {
     private Double decouvert;
 
-    public CompteSimple(Integer id, Double solde, Date date, Agence agence, Double decouvert) {
-        super(id, solde, date, agence);
+    public CompteSimple(Integer id, Double solde, Date date, Integer idAgence, Double decouvert) {
+        super(id, solde, date, idAgence);
         this.decouvert = decouvert;
     }
 
@@ -30,7 +30,7 @@ public class CompteSimple extends Compte {
         sb.append(", id=").append(id);
         sb.append(", solde=").append(solde);
         sb.append(", date=").append(date);
-        sb.append(", agence=").append(agence);
+        sb.append(", agence=").append(5);
         sb.append('}');
         return sb.toString();
     }

@@ -12,11 +12,13 @@ public class CompteDAO implements IDAO<Integer, Compte> {
     private static final String UPDATE = "UPDATE compte SET IdAgence = ?, Type = ?, Solde = ?, Decouvert = ?, TauxInteret = ? WHERE compte.Id = ?";
     private static final String DELETE = "DELETE FROM compte WHERE compte.Id = ?";
     private static final String QUERY_ALl = "SELECT Id, IdAgence, Type, Solde, Decouvert, TauxInteret, DateCreation FROM compte;";
-    private static final String QUERY_ID_AGENCE = "SELECT Id, Type, Solde, Decouvert, TauxInteret, DateCreation FROM compte WHERE IdAgence = ?";
+    private static final String QUERY_ID = "SELECT Id, IdAgence, Type, Solde, Decouvert, TauxInteret, DateCreation FROM compte WHERE Id = ?";
+
+    private static final String UPDATE_AFTER_CREATE = "SELECT DateCreation FROM compte WHERE Id = ?";
 
     private void buildPreparedStatement(PreparedStatement ps, Compte compte) throws SQLException {
         Compte.Etat type = compte.getType();
-        ps.setInt(1, compte.getAgence().getId());
+        ps.setInt(1, compte.getIdAgence());
         ps.setString(2, type.getLabel());
         ps.setDouble(3, compte.getSolde());
         ps.setString(4, null);
@@ -30,48 +32,26 @@ public class CompteDAO implements IDAO<Integer, Compte> {
         }
     }
 
-    private Compte buildCompte(ResultSet rs, Agence agence) throws SQLException {
+    private Compte buildCompte(ResultSet rs) throws SQLException {
         Compte compte = null;
         Compte.Etat etat = Compte.Etat.valueOf(rs.getString("Type"));
         Integer id = rs.getInt("Id");
+        Integer idAgence = rs.getInt("idAgence");
         Double solde = rs.getDouble("Solde");
         Date dateCreation = rs.getDate("DateCreation");
 
         switch (etat) {
             case epargne:
-                CompteEpargne cptE = new CompteEpargne(id, solde, dateCreation, agence, rs.getDouble("TauxInteret"));
-                agence.getCompteEpargnes().add(cptE);
+                CompteEpargne cptE = new CompteEpargne(id, solde, dateCreation, idAgence, rs.getDouble("TauxInteret"));
                 compte = cptE;
                 break;
             case simple:
-                CompteSimple cptS = new CompteSimple(id, solde, dateCreation, agence, rs.getDouble("Decouvert"));
-                agence.getCompteSimples().add(cptS);
+                CompteSimple cptS = new CompteSimple(id, solde, dateCreation, idAgence, rs.getDouble("Decouvert"));
                 compte = cptS;
                 break;
             case payant:
-                ComptePayant cptP = new ComptePayant(id, solde, dateCreation, agence);
-                agence.getComptePayants().add(cptP);
+                ComptePayant cptP = new ComptePayant(id, solde, dateCreation, idAgence);
                 compte = cptP;
-        }
-        return compte;
-    }
-
-    private Compte buildFullCompte(ResultSet rs, List<Agence> agences, AgenceDAO agenceDAO) throws SQLException, IOException, ClassNotFoundException {
-        Compte compte = null;
-        if (rs.next()) {
-            Integer idAgence = rs.getInt("IdAgence"); // récuperation l'objet Agence correspondant à l'id d'agence
-            Agence agence = null;
-            for (Agence agc : agences) {
-                if (agc.getId() == idAgence) { // si présent dans la collection existante, alors
-                    agence = agc; // agence est égale à l'existente
-                    break;
-                }
-            }
-            if (agence == null) { // sinon: interrogation
-                agence = agenceDAO.findById(idAgence);
-                agences.add(agence); // puis ajout dans la collection existante
-            }
-            compte = buildCompte(rs, agence);
         }
         return compte;
     }
@@ -88,8 +68,21 @@ public class CompteDAO implements IDAO<Integer, Compte> {
                         compte.setId(rs.getInt(1));
                     }
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            }
+            setUpdateDate(compte);
+        }
+    }
+
+    private void setUpdateDate(Compte compte) throws SQLException, IOException, ClassNotFoundException {
+        Connection connection = PersistenceManager.getConnection();
+        if (connection != null) {
+            try (PreparedStatement ps = connection.prepareStatement(UPDATE_AFTER_CREATE)) {
+                ps.setInt(1, compte.getId());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        compte.setDate(rs.getDate(1));
+                    }
+                }
             }
         }
     }
@@ -103,6 +96,7 @@ public class CompteDAO implements IDAO<Integer, Compte> {
                 ps.setInt(6, compte.getId());
                 ps.executeUpdate();
             }
+            setUpdateDate(compte);
         }
     }
 
@@ -118,23 +112,20 @@ public class CompteDAO implements IDAO<Integer, Compte> {
     }
 
     @Override
-    public Compte findById(Integer integer) throws SQLException, IOException, ClassNotFoundException {
-        return null;
-    }
-
-    public void getForAgence(Agence agence) throws SQLException, IOException, ClassNotFoundException {
+    public Compte findById(Integer id) throws SQLException, IOException, ClassNotFoundException {
         Connection connection = PersistenceManager.getConnection();
-        List<Compte> comptes = new ArrayList<>();
+        Compte compte = null;
         if (connection != null) {
-            try (PreparedStatement ps = connection.prepareStatement(QUERY_ID_AGENCE)) {
-                ps.setInt(1, agence.getId());
+            try (PreparedStatement ps = connection.prepareStatement(QUERY_ID)) {
+                ps.setInt(1, id);
                 ResultSet rs = ps.executeQuery();
-
-                while (rs.next()) {
-                    buildCompte(rs, agence);
+                if (rs.next()) {
+                    compte = buildCompte(rs);
                 }
+                rs.close();
             }
         }
+        return compte;
     }
 
     @Override
@@ -142,17 +133,50 @@ public class CompteDAO implements IDAO<Integer, Compte> {
         Connection connection = PersistenceManager.getConnection();
         List<Compte> comptes = new ArrayList<>();
         if (connection != null) {
-            List<Agence> agences = new ArrayList<>();
             try (PreparedStatement ps = connection.prepareStatement(QUERY_ALl)) {
                 ResultSet rs = ps.executeQuery();
-                AgenceDAO agenceDAO = new AgenceDAO();
-
                 while (rs.next()) {
-                    comptes.add(buildFullCompte(rs, agences, agenceDAO));
+                    comptes.add(buildCompte(rs));
                 }
                 rs.close();
             }
         }
         return comptes;
+    }
+
+    public List<Compte> buildFull() throws SQLException, IOException, ClassNotFoundException {
+        List<Compte> comptes = findAll();
+        OperationDAO operationDAO = new OperationDAO();
+        List<Operation> operations = operationDAO.findAll();
+        fillRelations(comptes, operations);
+        return comptes;
+    }
+
+    public void fillRelations(List<Compte> comptes, List<Operation> operations) {
+        for (Compte compte : comptes) {
+            for (Operation operation : operations) {
+                if (operation.getIdCompte() == compte.getId()) {
+                    operation.setCompte(compte);
+                    compte.getOperations().add(operation);
+                }
+            }
+        }
+    }
+
+    public void updateRelations(List<Compte> comptes) {
+        List<Operation> operations = new ArrayList<>();
+        for (Compte compte : comptes) {
+            operations.addAll(compte.getOperations());
+        }
+
+        for (Compte compte : comptes) {
+            for (Operation operation : operations) {
+                if (operation.getIdCompte() != operation.getCompte().getId() && compte.getId() == operation.getIdCompte()) {
+                    operation.getCompte().getOperations().remove(operation);
+                    compte.getOperations().add(operation);
+                    operation.setCompte(compte);
+                }
+            }
+        }
     }
 }

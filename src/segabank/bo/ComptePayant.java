@@ -10,8 +10,8 @@ public class ComptePayant extends Compte {
 
     private static final Integer TAUX_COMMISSION = 5;
 
-    public ComptePayant(Integer id, Double solde, Date date, Agence agence) {
-        super(id, solde, date, agence);
+    public ComptePayant(Integer id, Double solde, Date date, Integer idAgence) {
+        super(id, solde, date, idAgence);
     }
 
     @Override
@@ -26,10 +26,6 @@ public class ComptePayant extends Compte {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ComptePayant{");
-        sb.append("id=").append(id);
-        sb.append(", solde=").append(solde);
-        sb.append(", date=").append(date);
-        sb.append(", agence=").append(agence);
         sb.append('}');
         return sb.toString();
     }
