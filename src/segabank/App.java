@@ -2,10 +2,7 @@ package segabank;
 
 import segabank.bo.*;
 import segabank.dal.AgenceDAO;
-import segabank.dal.CompteDAO;
-import segabank.dal.OperationDAO;
-import segabank.dal.PersistenceManager;
-import segabank.memu.Menu;
+import segabank.menu.Menu;
 
 import java.io.IOException;
 import java.sql.SQLException;

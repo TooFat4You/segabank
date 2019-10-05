@@ -24,7 +24,7 @@ public class Operation {
     private TypeOperation typeOperation;
     private Integer idCompte;
     private Compte compte;
-
+    
     public Operation(Integer id, Double montant, Date date, TypeOperation typeOperation, Integer idCompte) {
         this.id = id;
         this.montant = montant;
