@@ -1,10 +1,17 @@
 package segabank.bo;
 
+import segabank.dal.CompteDAO;
+import segabank.dal.OperationDAO;
+
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public abstract class Compte {
+
+    private static List<Compte> comptes;
 
     public enum Etat {
         epargne,
@@ -25,15 +32,15 @@ public abstract class Compte {
 
     protected Integer id;
     protected Double solde;
-    protected Date date;
+    protected Date dateCreation;
     protected Integer idAgence;
     protected Agence agence;
     protected List<Operation> operations;
 
-    public Compte(Integer id, Double solde, Date date, Integer idAgence) {
+    public Compte(Integer id, Double solde, Date dateCreation, Integer idAgence) {
         this.id = id;
         this.solde = solde;
-        this.date = date;
+        this.dateCreation = dateCreation;
         this.idAgence = idAgence;
         operations = new ArrayList<>();
     }
@@ -64,12 +71,12 @@ public abstract class Compte {
 
     public abstract Etat getType();
 
-    public Date getDate() {
-        return date;
+    public Date getDateCreation() {
+        return dateCreation;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDateCreation(Date date) {
+        this.dateCreation = date;
     }
 
     public Agence getAgence() {
@@ -84,6 +91,16 @@ public abstract class Compte {
         return operations;
     }
 
+    public abstract Operation versement(Double montant) throws SQLException, IOException, ClassNotFoundException;
+
+    public abstract Operation retrait(Double montant) throws SQLException, IOException, ClassNotFoundException;
+
+    protected Operation saveOperation(Double montant, Operation.TypeOperation typeOperation) throws SQLException, IOException, ClassNotFoundException {
+        Operation operation = new Operation(0, montant, null, typeOperation, id);
+        operations.add(operation);
+        operation.setCompte(this);
+        return operation;
+    }
 
     @Override
     public String toString() {
@@ -92,5 +109,21 @@ public abstract class Compte {
         sb.append(" a un solde de : ").append(solde);
         sb.append('€');
         return sb.toString();
+    }
+
+    public static Compte getCompteById(List<Compte> comptes, Integer id) {
+        for (Compte cpt : comptes) {
+            if (cpt.getId() == id)
+                return cpt;
+        }
+        return null;
+    }
+
+    public static List<Compte> getComptes() {
+        return comptes;
+    }
+
+    public static void setComptes(List<Compte> comptes) {
+        Compte.comptes = comptes;
     }
 }

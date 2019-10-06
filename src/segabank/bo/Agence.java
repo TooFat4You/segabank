@@ -6,6 +6,8 @@ import java.util.List;
 
 public class Agence {
 
+    private static List<Agence> agences;
+
     private Integer id;
     private String code;
     private String adresse;
@@ -68,14 +70,22 @@ public class Agence {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Agence{");
-        sb.append("id=").append(id);
-        sb.append(", code='").append(code).append('\'');
-        sb.append(", adresse='").append(adresse).append('\'');
-        sb.append(", compteEpargnes=").append(compteEpargnes);
-        sb.append(", comptePayants=").append(comptePayants);
-        sb.append(", compteSimples=").append(compteSimples);
-        sb.append('}');
+        final StringBuilder sb = new StringBuilder("id: ");
+        sb.append(id).append(System.lineSeparator());
+        sb.append("code: ").append(code).append(System.lineSeparator());
+        sb.append("adresse: ").append(adresse).append(System.lineSeparator());
+        sb.append("nombre de compteEpargnes: ").append(compteEpargnes.size()).append(System.lineSeparator());
+        sb.append("nombre de comptePayants: ").append(comptePayants.size()).append(System.lineSeparator());
+        sb.append("nombre de compteSimples: ").append(compteSimples.size()).append(System.lineSeparator());
+        sb.append("--------------------");
         return sb.toString();
+    }
+
+    public static void setAgences(List<Agence> agences) {
+        Agence.agences = agences;
+    }
+
+    public static List<Agence> getAgences() {
+        return agences;
     }
 }

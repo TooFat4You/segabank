@@ -1,8 +1,12 @@
 package segabank.bo;
 
 import java.util.Date;
+import java.util.List;
 
 public class Operation {
+
+    private static List<Operation> operations;
+
     public enum TypeOperation {
         versement,
         retrait;
@@ -91,5 +95,20 @@ public class Operation {
         sb.append(", idCompte=").append(idCompte);
         sb.append('}');
         return sb.toString();
+    }
+
+    public static Operation getOperationById(List<Operation> operations, Integer id) {
+        for (Operation operation : operations)
+            if (operation.getId() == id)
+                return operation;
+        return null;
+    }
+
+    public static List<Operation> getOperations() {
+        return operations;
+    }
+
+    public static void setOperations(List<Operation> operations) {
+        Operation.operations = operations;
     }
 }

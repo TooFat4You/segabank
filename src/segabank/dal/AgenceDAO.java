@@ -147,5 +147,6 @@ public class AgenceDAO implements IDAO<Integer, Agence> {
                 }
             }
         }
+        Agence.setAgences(agences);
     }
 }

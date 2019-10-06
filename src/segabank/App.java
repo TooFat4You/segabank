@@ -25,7 +25,7 @@ public class App {
             System.exit(0);
         }
 
-        Menu menu = new Menu(agences, agenceDAO);
+        Menu menu = new Menu(agences);
         menu.printMenu();
     }
 }

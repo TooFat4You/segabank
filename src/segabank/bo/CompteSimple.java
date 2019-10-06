@@ -1,5 +1,7 @@
 package segabank.bo;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class CompteSimple extends Compte {
@@ -13,6 +15,24 @@ public class CompteSimple extends Compte {
     @Override
     public Etat getType() {
         return Etat.simple;
+    }
+
+    @Override
+    public Operation versement(Double montant) throws SQLException, IOException, ClassNotFoundException {
+        solde += montant;
+        return saveOperation(montant, Operation.TypeOperation.versement);
+    }
+
+    @Override
+    public Operation retrait(Double montant) throws SQLException, IOException, ClassNotFoundException {
+        Double decouvert = this.decouvert;
+        if (decouvert > 0) {
+            decouvert = decouvert - decouvert * 2;
+        }
+        if (solde - montant < decouvert)
+            return null;
+        solde -= montant;
+        return saveOperation(montant, Operation.TypeOperation.retrait);
     }
 
     public void setDecouvert(Double decouvert) {
@@ -29,7 +49,7 @@ public class CompteSimple extends Compte {
         sb.append("decouvert=").append(decouvert);
         sb.append(", id=").append(id);
         sb.append(", solde=").append(solde);
-        sb.append(", date=").append(date);
+        sb.append(", date=").append(dateCreation);
         sb.append(", agence=").append(5);
         sb.append('}');
         return sb.toString();

@@ -4,12 +4,14 @@ import segabank.bo.*;
 
 import java.io.IOException;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CompteDAO implements IDAO<Integer, Compte> {
-    private static final String INSERT = "INSERT INTO compte (IdAgence, Type, Solde, Decouvert, TauxInteret, DateCreation) VALUES (?, ?, ?, ?, ?, current_timestamp());";
-    private static final String UPDATE = "UPDATE compte SET IdAgence = ?, Type = ?, Solde = ?, Decouvert = ?, TauxInteret = ? WHERE compte.Id = ?";
+    private static final String INSERT = "INSERT INTO compte (IdAgence, Type, Solde, Decouvert, TauxInteret, DateCreation) VALUES (?, ?, ?, ?, ?, ?);";
+    private static final String UPDATE = "UPDATE compte SET IdAgence = ?, Type = ?, Solde = ?, Decouvert = ?, TauxInteret = ?, DateCreation = ? WHERE compte.Id = ?";
     private static final String DELETE = "DELETE FROM compte WHERE compte.Id = ?";
     private static final String QUERY_ALl = "SELECT Id, IdAgence, Type, Solde, Decouvert, TauxInteret, DateCreation FROM compte;";
     private static final String QUERY_ID = "SELECT Id, IdAgence, Type, Solde, Decouvert, TauxInteret, DateCreation FROM compte WHERE Id = ?";
@@ -23,6 +25,7 @@ public class CompteDAO implements IDAO<Integer, Compte> {
         ps.setDouble(3, compte.getSolde());
         ps.setString(4, null);
         ps.setString(5, null);
+        ps.setTimestamp(6, new Timestamp(compte.getDateCreation().getTime()));
         switch (type) {
             case simple:
                 ps.setDouble(4, ((CompteSimple)compte).getDecouvert());
@@ -80,7 +83,7 @@ public class CompteDAO implements IDAO<Integer, Compte> {
                 ps.setInt(1, compte.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        compte.setDate(rs.getDate(1));
+                        compte.setDateCreation(rs.getDate(1));
                     }
                 }
             }
@@ -93,7 +96,7 @@ public class CompteDAO implements IDAO<Integer, Compte> {
         if (connection != null) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
                 buildPreparedStatement(ps, compte);
-                ps.setInt(6, compte.getId());
+                ps.setInt(7, compte.getId());
                 ps.executeUpdate();
             }
             setUpdateDate(compte);
@@ -149,6 +152,7 @@ public class CompteDAO implements IDAO<Integer, Compte> {
         OperationDAO operationDAO = new OperationDAO();
         List<Operation> operations = operationDAO.findAll();
         fillRelations(comptes, operations);
+        Compte.setComptes(comptes);
         return comptes;
     }
 

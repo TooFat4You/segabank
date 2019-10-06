@@ -1,5 +1,7 @@
 package segabank.bo;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class ComptePayant extends Compte {
@@ -19,8 +21,27 @@ public class ComptePayant extends Compte {
         return Etat.payant;
     }
 
-    public Integer getTauxOperation() {
-        return TAUX_COMMISSION;
+    @Override
+    public Operation versement(Double montant) throws SQLException, IOException, ClassNotFoundException {
+        Double commision = getCommision(montant);
+        montant -= commision;
+        solde += montant;
+        return saveOperation(montant, Operation.TypeOperation.versement);
+    }
+
+    @Override
+    public Operation retrait(Double montant) throws SQLException, IOException, ClassNotFoundException {
+        Double commision = getCommision(montant);
+        montant += commision;
+        if (solde - montant < 0)
+            return null;
+        solde -= montant;
+        return saveOperation(montant, Operation.TypeOperation.retrait);
+    }
+
+    private Double getCommision(Double montant) {
+        Double commision = montant / 100 * TAUX_COMMISSION;
+        return commision;
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OperationDAO implements IDAO<Integer, Operation> {
-    private static final String CREATE = "INSERT INTO operation (Montant, Date, Type, IdCompte) VALUES (?, current_timestamp(), ?, ?)";
+    private static final String CREATE = "INSERT INTO operation (Montant, Date, Type, IdCompte) VALUES (?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE operation SET Montant = ?, Date = ?, Type = ?, IdCompte = ? WHERE operation.Id = ?";
     private static final String DELETE = "DELETE FROM operation WHERE operation.Id = ?";
     private static final String QUERY_ID = "SELECT Id, Montant, Date, Type, IdCompte FROM operation WHERE Id = ?";
@@ -30,8 +30,9 @@ public class OperationDAO implements IDAO<Integer, Operation> {
         if (connection != null) {
             try (PreparedStatement ps = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setDouble(1, operation.getMontant());
-                ps.setString(2, operation.getTypeOperation().getLabel());
-                ps.setInt(3, operation.getIdCompte());
+                ps.setTimestamp(2, new Timestamp(operation.getDate().getTime()));
+                ps.setString(3, operation.getTypeOperation().getLabel());
+                ps.setInt(4, operation.getIdCompte());
                 ps.executeUpdate();
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
@@ -48,7 +49,7 @@ public class OperationDAO implements IDAO<Integer, Operation> {
         if (connection != null) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
                 ps.setDouble(1, operation.getMontant());
-                ps.setDate(2, (Date) operation.getDate());
+                ps.setTimestamp(2, new Timestamp(operation.getDate().getTime()));
                 ps.setString(3, operation.getTypeOperation().getLabel());
                 ps.setInt(4, operation.getIdCompte());
                 ps.setInt(5, operation.getId());
@@ -94,6 +95,7 @@ public class OperationDAO implements IDAO<Integer, Operation> {
                 }
             }
         }
+        Operation.setOperations(operations);
         return operations;
     }
 
